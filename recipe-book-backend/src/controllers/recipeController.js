@@ -1,42 +1,22 @@
-const AWS = require("aws-sdk");
-AWS.config.update({ region: "eu-west-2" });
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const Recipe = require("../models/recipeModels");
 
-class RecipeController {
-  async getAllRecipes(req, res) {
-    try {
-      const params = {
-        TableName: "recipes",
-      };
+module.exports = {
+  addRecipe: async (req, res) => {
+    const { recipeName, ingredients, instructions } = req.body;
 
-      const data = await dynamoDb.scan(params).promise();
-      console.log("Successfully fetched recipes:", data.Items);
-      res.json(data.Items);
-    } catch (error) {
-      console.error("Error fetching recipes", error);
-      res.status(500).json({ error: "Error fetching recipes" });
+    const recipe = {
+      RecipesID: "4", // Replace with a unique identifier (e.g., use a UUID library)
+      recipeName,
+      ingredients,
+      instructions,
+    };
+
+    const success = await Recipe.addRecipe(recipe);
+
+    if (success) {
+      res.status(201).json({ message: "Recipe added successfully" });
+    } else {
+      res.status(500).json({ message: "Error adding recipe" });
     }
-  }
-
-  async getRecipeById(req, res) {
-    const recipeId = req.params.id;
-
-    try {
-      const params = {
-        TableName: "recipes",
-        Key: {
-          id: recipeId,
-        },
-      };
-
-      const data = await dynamoDb.get(params).promise();
-      console.log("Successfully fetched recipe:", data.Item);
-      res.json(data.Item);
-    } catch (error) {
-      console.error("Error fetching recipe", error);
-      res.status(500).json({ error: "Error fetching recipe" });
-    }
-  }
-}
-
-module.exports = new RecipeController();
+  },
+};
