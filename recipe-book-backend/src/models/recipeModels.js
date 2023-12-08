@@ -4,9 +4,9 @@ AWS.config.update({ region: "eu-west-2" });
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 class Recipe {
-  constructor({ RecipesID, recipName, ingredients, instructions }) {
+  constructor({ RecipesID, recipeName, ingredients, instructions }) {
     this.RecipesID = RecipesID;
-    this.recipName = recipName;
+    this.recipeName = recipeName;
     this.ingredients = ingredients;
     this.instructions = instructions;
   }
@@ -17,7 +17,7 @@ class Recipe {
         TableName: "recipes",
         Item: {
           RecipesID: this.RecipesID,
-          recipName: this.recipName,
+          recipeName: this.recipeName,
           ingredients: this.ingredients,
           instructions: this.instructions,
         },

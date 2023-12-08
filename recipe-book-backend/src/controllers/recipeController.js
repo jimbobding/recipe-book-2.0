@@ -1,22 +1,40 @@
 const Recipe = require("../models/recipeModels");
+const { v4: uuidv4 } = require("uuid");
 
-module.exports = {
-  addRecipe: async (req, res) => {
-    const { recipeName, ingredients, instructions } = req.body;
+class RecipeController {
+  static async addRecipe(req, res) {
+    try {
+      const { recipeName, ingredients, instructions } = req.body;
+      // const RecipesID = uuidv4().parseInt();
+      const RecipesIDString = uuidv4();
+      const RecipesID = parseInt(RecipesIDString.replace(/-/g, ""), 16);
+      // const RecipesID = 12;
+      console.log("RecipesIDSrting", RecipesIDString);
+      console.log("RecipesID", RecipesID);
 
-    const recipe = {
-      RecipesID: "4", // Replace with a unique identifier (e.g., use a UUID library)
-      recipeName,
-      ingredients,
-      instructions,
-    };
+      const recipe = new Recipe({
+        RecipesID,
+        recipeName,
+        ingredients,
+        instructions,
+      });
+      console.log("recipe", recipe);
 
-    const success = await Recipe.addRecipe(recipe);
+      // Call the save method on the instance
+      await recipe.save();
 
-    if (success) {
-      res.status(201).json({ message: "Recipe added successfully" });
-    } else {
-      res.status(500).json({ message: "Error adding recipe" });
+      res
+        .status(201)
+        .json({ success: true, message: "Recipe added successfully" });
+    } catch (error) {
+      console.error("Error adding recipe", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error.message,
+      });
     }
-  },
-};
+  }
+}
+
+module.exports = RecipeController;
