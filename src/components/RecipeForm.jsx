@@ -1,18 +1,10 @@
-// RecipeForm.js
-
-import {
-  faClock,
-  faPersonWalking,
-  faScaleBalanced,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FormEventHandler, useState } from "react";
+import { useState } from "react";
+import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 const RecipeForm = ({ addRecipe }) => {
   const [recipeData, setRecipeData] = useState({
-    RecipesID: "",
+    recipeId: "",
     recipeName: "",
     ingredients: "",
     instructions: "",
@@ -23,13 +15,45 @@ const RecipeForm = ({ addRecipe }) => {
 
     setRecipeData((prevData) => ({
       ...prevData,
-      [name]: name === "RecipesID" ? parseInt(value, 10) : value,
+      [name]: value,
+      recipeId: uuidv4(),
+
+      // [name]: name === "RecipeID" ? parseInt(value, 10) : value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    addRecipe(recipeData);
+
+    // if (!recipeData.recipeId) {
+    //   console.error("RecipeID is required.");
+
+    //   return;
+    // }
+    const recipeIdUnique = uuidv4();
+    console.log("recipeIdUnique", recipeIdUnique);
+    console.error("RecipeID", recipeData.recipeId);
+    console.error("Recipe data", recipeData);
+
+    try {
+      const response = await axios.post(
+        "https://qmryxmsuoe.execute-api.eu-west-2.amazonaws.com/recipe/recipe",
+        recipeData
+      );
+
+      const newRecipe = response.data;
+      console.log("newRecipe", newRecipe);
+
+      // Clear the form after successful submission
+      setRecipeData({
+        recipeId: "",
+        recipeName: "",
+        ingredients: "",
+        instructions: "",
+      });
+    } catch (error) {
+      console.error("Error creating recipe:", error);
+    }
   };
 
   return (
@@ -38,14 +62,20 @@ const RecipeForm = ({ addRecipe }) => {
         <div className="grid-container">
           <div className="grid-columns">
             <div className="icon">
-              {/* <FontAwesomeIcon className="fa-icon" icon={faUser} />{" "} */}
+              {/* Add your FontAwesomeIcon or other UI elements here */}
             </div>
             <div className="icon">
-              {" "}
-              <FontAwesomeIcon
-                className="fa-icon"
-                icon={faScaleBalanced}
-              />{" "}
+              {/* <label>
+                Recipe id:
+                <input
+                  type="string"
+                  name="recipeId"
+                  value={recipeData.recipeId}
+                  onChange={handleChange}
+                />
+              </label> */}
+            </div>
+            <div className="icon">
               <label>
                 Recipe Name:
                 <input
@@ -57,7 +87,6 @@ const RecipeForm = ({ addRecipe }) => {
               </label>
             </div>
             <div className="icon">
-              {" "}
               <label>
                 Ingredients:
                 <textarea
@@ -92,17 +121,6 @@ const RecipeForm = ({ addRecipe }) => {
               />
             </div>
           </div>
-
-          {/* <div className="grid-one-columns">
-            <div class Name="column col1">
-              <div className="card">
-                <div className="card-container">
-                  <h4></h4>
-                  <p></p>
-                </div>
-              </div>
-            </div>
-          </div> */}
         </div>
         <button type="button" onClick={handleSubmit}>
           Create Recipe

@@ -91,6 +91,7 @@ textarea {
   border-radius: 4px;
   box-sizing: border-box;
   resize: vertical;
+  background-color: #faf9de;
 }
 
 .instructions-text-area {
