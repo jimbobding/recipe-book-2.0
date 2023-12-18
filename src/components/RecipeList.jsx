@@ -31,37 +31,33 @@ const RecipeList = () => {
     }
   };
 
-  // const deleteData = async () => {
-  //   try {
-  //     const response = await axios.delete(
-  //       "https://qmryxmsuoe.execute-api.eu-west-2.amazonaws.com/recipe/recipes"
-  //     );
-
-  //     // Assuming a successful delete would return a status code of 204 (No Content)
-  //     if (response.status === 204) {
-  //       // The server responded successfully with no content (as expected for a DELETE request)
-  //       console.log("Recipe deleted successfully");
-  //     } else {
-  //       // Handle other status codes if needed
-  //       console.error("Unexpected response status:", response.status);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error deleting data:", error);
-  //   } finally {
-  //     // Perform any cleanup or UI changes here
-  //     setLoading(false);
-  //   }
-  // };
-
-  const deleteData = async () => {
+  const deleteData = async (recipeId) => {
     try {
-      const response = await axios.delete(
-        "https://qmryxmsuoe.execute-api.eu-west-2.amazonaws.com/recipe/recipes"
+      const response = await fetch(
+        "https://qmryxmsuoe.execute-api.eu-west-2.amazonaws.com/recipe/recipe",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            // Add other headers if needed (e.g., Authorization)
+          },
+          body: JSON.stringify({
+            recipeId: recipeId,
+          }),
+        }
       );
+
+      if (response.ok) {
+        console.log("Recipe deleted successfully.");
+        window.location.reload();
+        // Handle the response if needed (although DELETE requests often don't have a response)
+      } else {
+        console.error("Error deleting recipe. Status:", response.status);
+        console.error("Server Response:", await response.text());
+      }
     } catch (error) {
-      console.error("Error deleting data:", error);
-      console.log("error data", response.data);
-      setError(error.message || "An error occurred while deleting data.");
+      console.error("Error deleting recipe:", error);
+      setError(error.message || "An error occurred while deleting recipe.");
     } finally {
       setLoading(false);
     }
@@ -76,9 +72,6 @@ const RecipeList = () => {
   }
 
   return (
-    // <div>
-    //   <h1>RecipeList</h1>
-
     <div className="recipe-container">
       {data.map((item) => (
         <div key={item.recipeId}>
@@ -95,13 +88,12 @@ const RecipeList = () => {
           </div>
           <div className="recipe-instructions">Instructions</div>
           <div>{item.instructions}</div>
-          <button type="button" onClick={deleteData}>
+          <button type="button" onClick={() => deleteData(item.recipeId)}>
             Delete
           </button>
         </div>
       ))}
     </div>
-    // </div>
   );
 };
 

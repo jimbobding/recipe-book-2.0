@@ -43,6 +43,7 @@ const RecipeForm = ({ addRecipe }) => {
 
       const newRecipe = response.data;
       console.log("newRecipe", newRecipe);
+      window.location.reload();
 
       // Clear the form after successful submission
       setRecipeData({
